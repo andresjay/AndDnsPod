@@ -13,7 +13,7 @@ $ npm install request
   * token （**必填**）：https://console.dnspod.cn/account/token# 中获得的token；
   * domain （**必填**）：域名；
   * subdomain （**必填**），即需要绑定的子域名，需要与https://console.dnspod.cn/dns/list 内创建的**A类型**的主机记录名相同；
-  * intervalTim： 循环时间，大于0时启用，单位为**分钟**。
+  * intervalTime： 循环时间，大于0时启用，单位为**分钟**。
   
 示例：
 ```JavaScript
