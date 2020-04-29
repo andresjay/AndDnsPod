@@ -8,7 +8,7 @@ var request = require('request')
 var config = require('./config.js')
 
 var andToken = `${config.tokenId},${config.token}`
-var recordId, currentIp, mainInterval
+var recordId, currentIp
 
 function getRecordId () {
   return new Promise ((resolve, reject) => {
@@ -48,11 +48,11 @@ function updateIpAdd (newIp) {
         value: newIp
       }
     }, (err, res, body) => {
-      if (JSON.parse(body.status.code) == 1) {
+      if (!err && !!body) {
         currentIp = newIp // update current ip
-        console.log(JSON.parse(body).status.message)
+        console.log(JSON.parse(body))
       } else {
-        console.log(err)
+        reject(err)
       }
     })
   } else {
@@ -79,18 +79,19 @@ function getIp () {
 }
 
 function main () {
-  if (config) {
-    getIp().then(newIp => {
-      if (newIp != currentIp) { // IP has changed.
-        updateIpAdd(newIp)
-      }
-    }).catch(err => {
-      console.log(err)
-    })
-  } else {
-    console.log('Lack of core config file.')
-    window.clearInterval(mainInterval)
-  }
+  getIp().then(newIp => {
+    if (newIp != currentIp) { // IP has changed.
+      updateIpAdd(newIp)
+    }
+  }).catch(err => {
+    console.log(err)
+  })
 }
 
-!!config.intervalTime&&config.intervalTime>0?mainInterval=setInterval(main(), config.intervalTime*60000):main()
+if ( !!config.intervalTime && config.intervalTime > 0 ) {
+  setInterval(() => {
+    main()
+  }, config.intervalTime * 10000)
+} else {
+  main()
+}
