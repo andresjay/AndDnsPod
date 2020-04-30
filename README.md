@@ -7,6 +7,11 @@ AndDnsPod依赖Node.js的`request`包，确保在使用前已安装：
 $ npm install request
 ```
 
+拉取项目
+```
+$ git clone https://github.com/andresjay/AndDnsPod
+```
+
 ## Step 1
 填写配置，在`config.js`中填入
   * token id （**必填**）：https://console.dnspod.cn/account/token# 中获得的token id；
