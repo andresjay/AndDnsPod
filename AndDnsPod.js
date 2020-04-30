@@ -24,8 +24,12 @@ function getRecordId () {
         let targetDomain = JSON.parse(body).records.find(item => {
           return item.name === config.subDomain
         })
-        recordId = targetDomain.id
-        resolve()
+        if (targetDomain != undefined) {
+          recordId = targetDomain.id
+          resolve()
+        } else {
+          reject('WARNING: Subdomain doesn`t exist')
+        }
       } else {
         reject(err)
       }   
@@ -60,6 +64,7 @@ function updateIpAdd (newIp) {
       updateIpAdd(newIp)
     }).catch((err) => {
       console.log(err)
+      process.exit()
     })
   }
 }
@@ -68,7 +73,7 @@ function getIp () {
   return new Promise ((resolve, reject) => {
     request('http://pv.sohu.com/cityjson', (error, response, body) => {
       if (!error && response.statusCode == 200) {
-        let json = body.slice(19, -1) // Cut the bullshit
+        let json = body.slice(19, -1)
         let ip = JSON.parse(json).cip
         resolve(ip)
       } else {
@@ -80,7 +85,7 @@ function getIp () {
 
 function main () {
   getIp().then(newIp => {
-    if (newIp != currentIp) { // IP has changed.
+    if (newIp != currentIp) {
       updateIpAdd(newIp)
     }
   }).catch(err => {
@@ -89,6 +94,7 @@ function main () {
 }
 
 if ( !!config.intervalTime && config.intervalTime > 0 ) {
+  console.log(`Loop started in every ${config.intervalTime} minutes.`)
   setInterval(() => {
     main()
   }, config.intervalTime * 10000)
